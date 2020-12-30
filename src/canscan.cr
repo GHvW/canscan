@@ -90,35 +90,20 @@ module Canscan
 
   # ports_chan.close
 
-  # 6 
+  # 6, compiled with crystal build --Dpreview_mt ./src/canscan
   def self.worker(ports, results)
     address = "scanme.nmap.org"
     while !ports.closed?
       begin
         i = ports.receive
         TCPSocket.open(address, i) do |conn|
-          # puts "#{i} is open"
           results.send(i)
         end
       rescue Channel::ClosedError # workers will be waiting on receive, when the channels are closed, this error will throw so we need to catch it!
-        # puts "channel closed!"
       rescue Socket::ConnectError
-        # puts "#{i} is closed"
         results.send(0)
       end
     end
-    # while !ports.closed?
-    #   i = ports.receive
-    #   begin
-    #     TCPSocket.open(address, i) do |conn|
-    #       # puts "#{i} is open"
-    #       results.send(i)
-    #     end
-    #   rescue
-    #     # puts "#{i} is closed"
-    #     results.send(0)
-    #   end
-    # end
   end
 
   ports_chan = Channel(Int32).new(100) # pool of 100 workers
@@ -142,7 +127,7 @@ module Canscan
     end
   end
 
-  ports_chan.close # its this one
+  ports_chan.close
   results_chan.close
 
   puts "open ports: #{open_ports}"
