@@ -63,7 +63,7 @@ module Canscan
   #   done_chan.receive
   # end
 
-  # 5, this one didn't really work, it was mostly in order (crystal single threaded?)
+  # 5, shows out of order if using multithread preview `crystal build -Dpreview_mt ./src/canscan`, otherwise it mostly is in order
   # def self.worker(ports, done)
   #   while !ports.closed?
   #     puts ports.receive
@@ -94,17 +94,31 @@ module Canscan
   def self.worker(ports, results)
     address = "scanme.nmap.org"
     while !ports.closed?
-      i = ports.receive
       begin
+        i = ports.receive
         TCPSocket.open(address, i) do |conn|
-          puts "#{address}:#{i} is open"
-
+          # puts "#{i} is open"
           results.send(i)
         end
-      rescue
+      rescue Channel::ClosedError # workers will be waiting on receive, when the channels are closed, this error will throw so we need to catch it!
+        # puts "channel closed!"
+      rescue Socket::ConnectError
+        # puts "#{i} is closed"
         results.send(0)
       end
     end
+    # while !ports.closed?
+    #   i = ports.receive
+    #   begin
+    #     TCPSocket.open(address, i) do |conn|
+    #       # puts "#{i} is open"
+    #       results.send(i)
+    #     end
+    #   rescue
+    #     # puts "#{i} is closed"
+    #     results.send(0)
+    #   end
+    # end
   end
 
   ports_chan = Channel(Int32).new(100) # pool of 100 workers
@@ -121,14 +135,14 @@ module Canscan
   end
 
   open_ports = [] of Int32
-  1024.times do
+  (1..1024).each do
     result = results_chan.receive
     if result != 0
       open_ports << result
     end
   end
 
-  ports_chan.close
+  ports_chan.close # its this one
   results_chan.close
 
   puts "open ports: #{open_ports}"
