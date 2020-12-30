@@ -63,7 +63,7 @@ module Canscan
   #   done_chan.receive
   # end
 
-  # 5, this one didn't really work
+  # 5, this one didn't really work, it was mostly in order (crystal single threaded?)
   # def self.worker(ports, done)
   #   while !ports.closed?
   #     puts ports.receive
@@ -98,11 +98,12 @@ module Canscan
       begin
         TCPSocket.open(address, i) do |conn|
           puts "#{address}:#{i} is open"
+
+          results.send(i)
         end
       rescue
+        results.send(0)
       end
-
-      done.send(true)
     end
   end
 
@@ -119,12 +120,18 @@ module Canscan
     end
   end
 
+  open_ports = [] of Int32
   1024.times do
-    results_chan.receive
+    result = results_chan.receive
+    if result != 0
+      open_ports << result
+    end
   end
 
   ports_chan.close
   results_chan.close
+
+  puts "open ports: #{open_ports}"
 
   puts "Bye Bye"
 end
