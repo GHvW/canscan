@@ -24,4 +24,4 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [your-name-here](https://github.com/your-github-user) - creator and maintainer
+- [Garrett van Wageningen](https://github.com/ghvw) - creator and maintainer
