@@ -99,7 +99,7 @@ module Canscan
         TCPSocket.open(address, i) do |conn|
           results.send(i)
         end
-      rescue Channel::ClosedError # workers will be waiting on receive, when the channels are closed, this error will throw so we need to catch it!
+      rescue Channel::ClosedError # some workers will be waiting on receive, when the channels are closed, this error will throw so we need to catch it!
       rescue Socket::ConnectError
         results.send(0)
       end
