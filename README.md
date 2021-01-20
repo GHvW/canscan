@@ -1,27 +1,8 @@
 # canscan
 
-TODO: Write a description here
-
-## Installation
-
-TODO: Write installation instructions here
-
-## Usage
-
-TODO: Write usage instructions here
+This is an implementation of the port scanner from the [Black Hat Go](https://nostarch.com/blackhatgo) exercise (in Crystal though obviously :smile:)
 
 ## Development
 
-TODO: Write development instructions here
+For now canscan is a direct implementation of the code exercise from the book. I may develop it further into a console app for fun later.
 
-## Contributing
-
-1. Fork it (<https://github.com/your-github-user/canscan/fork>)
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
-
-## Contributors
-
-- [Garrett van Wageningen](https://github.com/ghvw) - creator and maintainer
